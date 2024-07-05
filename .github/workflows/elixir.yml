@@ -42,12 +42,10 @@ jobs:
         env:
           CC: gcc-10
           CXX: g++-10
-      - run: mix test --warnings-as-errors
+      - run: mix test --warnings-as-errors --cover
         env:
           CC: gcc-10
           CXX: g++-10
-        run: mix coveralls.github
-        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
