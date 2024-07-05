@@ -1,4 +1,5 @@
 defmodule ExAequoColors do
+  @version "0.0.0"
   @moduledoc """
   Documentation for `ExAequoColors`.
   """
@@ -15,4 +16,7 @@ defmodule ExAequoColors do
   def hello do
     :world
   end
+
+  def version, do: @version
 end
+# SPDX-License-Identifier: AGPL-3.0-or-later

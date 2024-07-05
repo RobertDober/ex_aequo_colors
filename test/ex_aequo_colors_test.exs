@@ -2,7 +2,5 @@ defmodule ExAequoColorsTest do
   use ExUnit.Case
   doctest ExAequoColors
 
-  test "greets the world" do
-    assert ExAequoColors.hello() == :world
-  end
 end
+# SPDX-License-Identifier: AGPL-3.0-or-later

@@ -46,7 +46,6 @@ jobs:
         env:
           CC: gcc-10
           CXX: g++-10
-      - name: Run Coverage 
         run: mix coveralls.github
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
