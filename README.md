@@ -4,7 +4,7 @@ It has been generated from the template `README.md.eex` by Extractly (https://gi
 and any changes you make in this file will most likely be lost
 -->
 
-[![CI](https://github.com/RobertDober/ex_aequo_colors/actions/workflows/elixir.yml/badge.svg)](https://github.com/RobertDober/ex_aequo_colors/actions/workflows/ci.yml)
+[![CI](https://github.com/RobertDober/ex_aequo_colors/actions/workflows/elixir.yml/badge.svg)](https://github.com/RobertDober/ex_aequo_colors/actions)
 [![Hex.pm](https://img.shields.io/hexpm/v/ex_aequo_colors.svg)](https://hex.pm/packages/ex_aequo_colors)
 [![Hex.pm](https://img.shields.io/hexpm/dw/ex_aequo_colors.svg)](https://hex.pm/packages/ex_aequo_colors)
 [![Hex.pm](https://img.shields.io/hexpm/dt/ex_aequo_colors.svg)](https://hex.pm/packages/ex_aequo_colors)
