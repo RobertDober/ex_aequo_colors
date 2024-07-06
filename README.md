@@ -5,7 +5,6 @@ and any changes you make in this file will most likely be lost
 -->
 
 [![CI](https://github.com/RobertDober/ex_aequo_colors/actions/workflows/elixir.yml/badge.svg)](https://github.com/RobertDober/ex_aequo_colors/actions/workflows/ci.yml)
-[![Coverage Status](https://coveralls.io/repos/github/RobertDober/ex_aequo_colors/badge.svg?branch=master)](https://coveralls.io/github/RobertDober/ex_aequo_colors?branch=master)
 [![Hex.pm](https://img.shields.io/hexpm/v/ex_aequo_colors.svg)](https://hex.pm/packages/ex_aequo_colors)
 [![Hex.pm](https://img.shields.io/hexpm/dw/ex_aequo_colors.svg)](https://hex.pm/packages/ex_aequo_colors)
 [![Hex.pm](https://img.shields.io/hexpm/dt/ex_aequo_colors.svg)](https://hex.pm/packages/ex_aequo_colors)
