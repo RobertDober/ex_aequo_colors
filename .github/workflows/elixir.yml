@@ -20,7 +20,6 @@ jobs:
           - elixir: 1.17.0
             otp: 27
             os: ubuntu-latest
-            warnings_as_errors: true
           - elixir: 1.17.1
             otp: 27
             os: ubuntu-latest
@@ -46,17 +45,18 @@ jobs:
             _build
           key: ${{ matrix.otp }}-${{ matrix.elixir }}-build
       - run: mix format --check-formatted
-        if: matrix.warnings_as_errors
         env:
           CC: gcc-10
           CXX: g++-10
-      - run: mix compile --warnings-as-errors
-        if: matrix.warnings_as_errors
+      - run: mix compile
+        env:
+          CC: gcc-10
+          CXX: g++-10
+      - run: mix compile --force --warnings-as-errors
         env:
           CC: gcc-10
           CXX: g++-10
       - run: mix test --warnings-as-errors
-        if: matrix.warnings_as_errors
         env:
           CC: gcc-10
           CXX: g++-10
