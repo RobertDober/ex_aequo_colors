@@ -45,7 +45,7 @@ jobs:
             ~/.mix
             _build
           key: ${{ matrix.otp }}-${{ matrix.elixir }}-build
-      - run: mix format --check_formatted
+      - run: mix format --check-formatted
         if: matrix.warnings_as_errors
         env:
           CC: gcc-10
