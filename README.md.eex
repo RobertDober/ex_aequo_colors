@@ -13,6 +13,14 @@
 
 - And that's about it 
 
+## Documentation
+
+<%= xtra.moduledoc "ExAequoColors", wrap_code_blocks: "elixir" %>
+
+<%= xtra.functiondoc "ExAequoColors.color/2", wrap_code_blocks: "elixir", headline: 3 %>
+
+
+
 ## Author
 
 Copyright © 2024 Robert Dober robert.dober@gmail.com

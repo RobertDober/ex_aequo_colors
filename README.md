@@ -17,6 +17,26 @@ and any changes you make in this file will most likely be lost
 
 - And that's about it 
 
+## Documentation
+
+
+### Features
+
+- ANSI Colors
+
+- Extended ANSI Colors
+
+- `colorize` CLI
+
+
+
+### ExAequoColors.color/2
+
+`color` add ANSI code for a color to a string
+
+
+
+
 ## Author
 
 Copyright © 2024 Robert Dober robert.dober@gmail.com

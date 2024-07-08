@@ -35,8 +35,10 @@ defmodule SimpleArgs.MixProject do
   defp deps do
     [
       {:dialyxir, "~> 1.4.3", only: [:dev], runtime: false},
+      {:ex_aequo_kwds, "~> 0.1.1"},
       {:excoveralls, "~> 0.18.1", only: [:test]},
       {:extractly, "~> 0.5.4", only: [:dev]},
+      {:minipeg, "~> 0.6.3"}
     ]
   end
 
@@ -84,4 +86,5 @@ defmodule SimpleArgs.MixProject do
     Mix.shell().info("Docs built successfully")
   end
 end
+
 # SPDX-License-Identifier: AGPL-3.0-or-later

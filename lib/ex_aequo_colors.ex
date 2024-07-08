@@ -1,22 +1,35 @@
 defmodule ExAequoColors do
-  @version "0.0.0"
-  @moduledoc """
-  Documentation for `ExAequoColors`.
+  @version "0.1.0"
+
+  alias __MODULE__.Color
+
+  @moduledoc  ~S"""
+
+  ### Features
+
+  - ANSI Colors
+
+  - Extended ANSI Colors
+
+  - `colorize` CLI
+
   """
 
-  @doc """
-  Hello world.
+  @doc ~S"""
+  add ANSI code for a color to a string
 
-  ## Examples
+  We can use the 8 basic ANSI color codes
 
-      iex> ExAequoColors.hello()
-      :world
+      iex(0)> color("This is red", :red)
+      {:ok, "\e[31mThis is red"}
 
   """
-  def hello do
-    :world
+
+  def color(subject, flags) do
+    Color.color(tostring(subject), flags)
   end
 
   def version, do: @version
 end
+
 # SPDX-License-Identifier: AGPL-3.0-or-later
