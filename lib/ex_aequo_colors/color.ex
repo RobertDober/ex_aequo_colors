@@ -18,26 +18,25 @@ defmodule ExAequoColors.Color do
 
   defp _extract_codes_from(colorspec) do
     if Enum.member?(colorspec, :reset) do
-      case (colorspec |> List.delete(:reset) |> _extract_prefix_from()) do
+      case colorspec |> List.delete(:reset) |> _extract_prefix_from() do
         {:ok, prefix} -> {prefix, "\e[0m"}
         error -> error
       end
     else
-        case colorspec |> _extract_prefix_from() do
-          {:ok, prefix} -> {prefix, ""}
-          error -> error
-        end
+      case colorspec |> _extract_prefix_from() do
+        {:ok, prefix} -> {prefix, ""}
+        error -> error
+      end
     end
   end
 
   defp _extract_prefix_from(colorspec) do
-  
   end
-
 
   defp _to_kwd(list) do
     list
     |> Enum.map(&{&1, true})
   end
 end
+
 # SPDX-License-Identifier: AGPL-3.0-or-later

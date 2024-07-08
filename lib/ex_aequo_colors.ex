@@ -3,7 +3,7 @@ defmodule ExAequoColors do
 
   alias __MODULE__.Color
 
-  @moduledoc  ~S"""
+  @moduledoc ~S"""
 
   ### Features
 
