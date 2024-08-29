@@ -1,6 +1,6 @@
 defmodule Test.Color.BasicAnsiTest do
   use ExUnit.Case
-  import ExAequoColors.Color, only: [color: 2]
+  import ExAequoColors
 
   describe "basic ANSI colors" do
     [
@@ -14,15 +14,23 @@ defmodule Test.Color.BasicAnsiTest do
       {37, :white}
     ]
     |> Enum.each(fn {escape, color_name} ->
-      expected = ["\e[#{escape}m", "#{color_name}", "\e[0m"]
-      test_name = "basic ANSI color #{color_name} with reset"
+      expected = "\e[#{escape}m#{color_name}"
+      test_name = "basic ANSI color #{color_name}"
 
-      test test_name do
-        assert color(to_string(unquote(color_name)), unquote(:color_name)) == unquote(expected)
+      test "#{test_name}" do
+        assert col(to_string(unquote(color_name)), unquote(color_name)) == unquote(expected)
+      end
+      test "#{test_name} with reset" do
+      assert colr(to_string(unquote(color_name)), unquote(color_name)) == unquote(expected) <> "\e[0m"
       end
     end)
   end
 
+  describe "debugging" do
+    test "basic col" do
+      assert col("red", :red) == "\e[31mred"
+    end
+  end
   # defmodule Test.ExAequo.ColorTest do
   # use ExUnit.Case
 

@@ -3,31 +3,60 @@ defmodule ExAequoColors do
 
   alias __MODULE__.Color
 
-  @moduledoc ~S"""
+  @moduledoc  ~S"""
 
   ### Features
 
   - ANSI Colors
 
-  - Extended ANSI Colors
+  - Extended ANSI Color, suffixs
 
   - `colorize` CLI
 
   """
 
   @doc ~S"""
-  add ANSI code for a color to a string
+
+  ## ANSI code for a color to a string
 
   We can use the 8 basic ANSI color codes
 
-      iex(0)> color("This is red", :red)
-      {:ok, "\e[31mThis is red"}
+      iex(1)> col("This is red", :red)
+      "\e[31mThis is red"
+
+  Or we can add a reset
+
+      iex(2)> col("This is red", :red, :reset)
+      "\e[31mThis is red\e[0m"
+
+  Which can also be achieved by means of the `colr` function
+
+      iex(3)> colr("This is red", :red)
+      "\e[31mThis is red\e[0m"
+
+  We can also add bold or dim
+
+      iex(4)> col("Bold and blue", :bold, :blue)
+      "\e[1m\e[34mBold and blue"
+
+      iex(5)> col("Green and dim", :green, :dim)
+      "\e[32m\e[2mGreen and dim"
 
   """
 
-  def color(subject, flags) do
-    Color.color(tostring(subject), flags)
+  def col(subject, flag) do
+    Color.color(to_string(subject), [flag])
   end
+  def col(subject, flag1, flag2) do
+    Color.color(to_string(subject), [flag1, flag2])
+  end
+  def colr(subject, flag) do
+    Color.color_reset(to_string(subject), [flag])
+  end
+  def colr(subject, flag1, flag2) do
+    Color.color_reset(to_string(subject), [flag1, flag2])
+  end
+
 
   def version, do: @version
 end

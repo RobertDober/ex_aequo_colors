@@ -24,3 +24,6 @@ ex_aequo_colors-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+tags
+.local
+xcol

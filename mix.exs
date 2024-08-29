@@ -1,4 +1,4 @@
-defmodule SimpleArgs.MixProject do
+defmodule ExAequoColors.MixProject do
   use Mix.Project
   @version "0.1.0"
   @url "https://github.com/RobertDober/ex_aequo_colors"
@@ -9,9 +9,10 @@ defmodule SimpleArgs.MixProject do
       version: @version,
       elixir: "~> 1.17",
       elixirc_paths: elixirc_paths(Mix.env()),
+      escript: escript_config(),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      description: "Extracting all color related code and colorize escript from ex_aequo",
+      description: "ANSI colors at will",
       package: package(),
       preferred_cli_env: [
         coveralls: :test,
@@ -35,10 +36,18 @@ defmodule SimpleArgs.MixProject do
   defp deps do
     [
       {:dialyxir, "~> 1.4.3", only: [:dev], runtime: false},
-      # {:ex_aequo_kwds, "~> 0.1.1"},
-      {:excoveralls, "~> 0.18.1", only: [:test]},
+      # {:ex_aequo_fn, "~> 0.1.0"},
+      {:ex_aequo_base, "~> 0.1.5"},
+      {:excoveralls, "~> 0.18.2", only: [:test]},
       {:extractly, "~> 0.5.4", only: [:dev]},
       {:minipeg, "~> 0.6.3"}
+    ]
+  end
+
+  defp escript_config do
+    [
+      main_module: ExAequoColors.Cli,
+      name: "xcol"
     ]
   end
 
