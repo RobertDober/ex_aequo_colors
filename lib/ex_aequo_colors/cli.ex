@@ -2,13 +2,12 @@ defmodule ExAequoColors.Cli do
 
   import ExAequoBase.Map, only: [put_if: 3]
   import ExAequoColors.Color, only: [color: 2]
-  import ExAequoColors.Colorizer, only: [colorize: 2]
-  import ExAequoBase.Io, only: [numbered_lines: 1]
+  import ExAequoColors.Colorizer, only: [colorize: 1, colorize: 2, colorize!: 2, mk_options_and_rgxen: 1]
 
   @moduledoc false
 
   @args """
-  usage:
+  <bold>usage:
 
     colorize  --help
     colorize  --version
@@ -24,94 +23,92 @@ defmodule ExAequoColors.Cli do
                   needs to be doubled to be used verbatim
     -t|--trigger String that triggers a color code, (first char of trigger needs to be doubled to get a verbatim trigger). Defaults to "<"
 
-    --html       Short for --trigger <!-- and --closer -->    
   """
+    # --html       Short for --trigger <!-- and --closer -->    
 
-  @inner_dash ~r/(?<=[[:alnum:]])-/
 
-    def main(args) do
-      case parse_args(args) do
-        [x] ->  
-          IO.puts(:stderr, color("ERROR:", [:bold, :red, :reset]) <> inspect(x))
-          IO.puts(:stderr, @args)
-        :help -> IO.puts(@args)
-        :version -> IO.puts("colorize v#{_version()}")
-        options -> options
-        |> _add_defaults()
-        |> _add_shortcuts()
-        |> colorize() 
-        |> IO.puts 
-      end
+  def main(args) do
+    case parse_args(args) do
+      [x] ->  
+        IO.puts(:stderr, color("ERROR:", [:bold, :red, :reset]) <> inspect(x))
+        IO.puts(:stderr, @args)
+      :help -> IO.puts(@args)
+      :version -> IO.puts("colorize v#{_version()}")
+      options -> options
+      # |> _add_defaults()
+      # |> _add_shortcuts()
+      |> colorize_input() 
+      |> IO.puts 
     end
+  end
 
-    defp colorize(options) do
-      stream =
-        case Map.get(options, :file) do
-          nil -> IO.stream(:stdio, :line)
-          file -> File.stream!(file, :line)
-        end
-      run(stream, options) 
+  defp colorize_input(options) do
+    opt_and_rgxen = mk_options_and_rgxen(options)
+    case Map.get(options, :file) do
+      nil -> IO.stream(:stdio, :line)
+      file -> File.stream!(file, :line)
+    end 
+    |> run(opt_and_rgxen) 
+  end
+
+
+  defp run(stream, opt_and_rgxen) do
+    stream
+    |> Stream.map(&colorize!(&1, opt_and_rgxen))
+    |> Enum.join("\n") 
+  end
+
+  defp _add_defaults(options) do
+    options
+    |> Map.put_new(:trigger, "<") 
+    |> Map.put_new(:closer, ">") 
+  end
+
+  defp _add_shortcuts(options) do
+    options
+    |> put_if(options.html, [trigger: "<!--", closer: "-->"]) 
+    |> put_if(options.dollar, [resetter: "$"])
+  end
+
+  defp _colorize_line({line, lnb}, options) do
+    case colorize(line, options) do
+      {:ok, result} -> result
+      {:error, message} -> raise "Error in line #{lnb}: #{message}"
     end
+  end
 
+  defp parse_args(argv) do
+    switches = [
+      auto: :boolean,
+      closer: :string,
+      dollar: :boolean,
+      help: :boolean,
+      html: :boolean,
+      no_color: :boolean,
+      resetter: :string,
+      trigger: :string,
+      version: :boolean,
+    ]
 
-    defp run(stream, options) do
-      stream
-      |> numbered_lines()
-      |> Stream.map(&_colorize_line(&1, options))
-      |> Enum.join("\n") 
+    aliases = [
+      a: :auto,
+      c: :closer,
+      d: :dollar,
+      h: :help,
+      n: :no_color,
+      r: :resetter,
+      t: :trigger,
+      v: :version
+    ]
+
+    case OptionParser.parse(argv, strict: switches, aliases: aliases) do
+      {_, _, [_ | _] = errors} -> errors
+      {[{:help, true}], _, _} -> :help
+      {[{:version, true}], _, _} -> :version
+      {options, [file], _} -> options |> Enum.into(%{}) |> Map.put(:file, file) |> Map.put(:no_color, System.get_env("NO_COLOR", Keyword.get(options, :no_color)))
+      {options, [], _} -> options |> Enum.into(%{}) |> Map.put(:no_color, System.get_env("NO_COLOR", Keyword.get(options, :no_color)))
     end
-
-    defp _add_defaults(options) do
-      options
-      |> Map.put_new(:trigger, "<") 
-      |> Map.put_new(:closer, ">") 
-    end
-
-    defp _add_shortcuts(options) do
-      options
-      |> put_if(options.html, [trigger: "<!--", closer: "-->"]) 
-      |> put_if(options.dollar, [resetter: "$"])
-    end
-
-    defp _colorize_line({line, lnb}, options) do
-      case colorize(line, options) do
-        {:ok, result} -> result
-        {:error, message} -> raise "Error in line #{lnb}: #{message}"
-      end
-    end
-
-    defp parse_args(argv) do
-      switches = [
-        auto: :boolean,
-        closer: :string,
-        dollar: :boolean,
-        help: :boolean,
-        html: :boolean,
-        no_color: :boolean,
-        resetter: :string,
-        trigger: :string,
-        version: :boolean,
-      ]
-
-      aliases = [
-        a: :auto,
-        c: :closer,
-        d: :dollar,
-        h: :help,
-        n: :no_color,
-        r: :resetter,
-        t: :trigger,
-        v: :version
-      ]
-
-      case OptionParser.parse(argv, strict: switches, aliases: aliases) do
-        {_, _, [_ | _] = errors} -> errors
-        {[{:help, true}], _, _} -> :help
-        {[{:version, true}], _, _} -> :version
-        {options, [file], _} -> options |> Enum.into(%{}) |> Map.put(:file, file) |> Map.put(:no_color, System.get_env("NO_COLOR", Keyword.get(options, :no_color)))
-        {options, [], _} -> options |> Enum.into(%{}) |> Map.put(:no_color, System.get_env("NO_COLOR", Keyword.get(options, :no_color)))
-      end
-    end
+  end
 
     # defp put_if(map, key, pairs) do
     #   if Map.get(map, key) do
