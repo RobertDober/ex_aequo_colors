@@ -40,7 +40,7 @@ defmodule ExAequoColors.MixProject do
       {:ex_aequo_base, "~> 0.1.5"},
       {:excoveralls, "~> 0.18.2", only: [:test]},
       {:extractly, "~> 0.5.4", only: [:dev]},
-      {:minipeg, "~> 0.6.3"}
+      {:minipeg, "~> 0.6.5"}
     ]
   end
 

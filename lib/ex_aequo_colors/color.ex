@@ -1,5 +1,4 @@
 defmodule ExAequoColors.Color do
-
   @moduledoc false
 
   @names %{
@@ -471,77 +470,105 @@ defmodule ExAequoColors.Color do
     yellow3: {175, 215, 0},
     yellow4: {135, 135, 0},
     yellow: 33
-    }
+  }
 
-    @doc ~S"""
-      Transform a string and color specifications into an IO Chardata
-    """
-    def color(subject, colorspec)
+  @doc ~S"""
+  just get the code for colorspec without a string (subject)
+  """
+  def color(colorspec)
 
-    def color(subject, colorspec) when is_atom(colorspec) do
-      color(subject, [colorspec])
-    end
+  def color(colorspec) when is_list(colorspec) do
+    colorspec
+    |> Enum.map(&_extract_code/1)
+    |> Enum.join()
+  end
 
-    def color(subject, colorspec) do
-      {cspec, suffix} = _extract_reset(colorspec)
-      prefix = cspec
+  def color(colorspec) do
+    _extract_code(colorspec)
+  end
+
+  @doc ~S"""
+    Transform a string and color specifications into an IO Chardata
+  """
+  def color(subject, colorspec)
+
+  def color(subject, colorspec) when is_atom(colorspec) do
+    color(subject, [colorspec])
+  end
+
+  def color(subject, colorspec) do
+    {cspec, suffix} = _extract_reset(colorspec)
+
+    prefix =
+      cspec
       |> Enum.map(&_extract_code/1)
-      |> Enum.join
-      [ prefix, subject, suffix ]
-      |> IO.chardata_to_string
-    end
+      |> Enum.join()
 
-    def color_code(colorspec)
-    def color_code(colorspec) when is_list(colorspec) do
-      colorspec 
-      |> Enum.map(&_extract_code/1)
-      |> Enum.join
-    end
-    def color_code(colorspec), do: _extract_code(:reset)
+    [prefix, subject, suffix]
+    |> IO.chardata_to_string()
+  end
 
-    @doc ~S"""
-      Transform a string and color specifications into an IO Chardata with a 
-      reset at the end
-    """
-    def color_reset(subject, colorspec)
+  def color_code(colorspec)
 
-    def color_reset(subject, colorspec) when is_atom(colorspec) do
-      color_reset(subject, [colorspec])
-    end
+  def color_code(colorspec) when is_list(colorspec) do
+    colorspec
+    |> Enum.map(&_extract_code/1)
+    |> Enum.join()
+  end
 
-    def color_reset(subject, colorspec) do
-      color(subject, [:reset | colorspec])
-    end
+  def color_code(colorspec), do: _extract_code(:reset)
 
-    defp _extract_code(code)
-    defp _extract_code({_, _, _}=rgb) do
+  @doc ~S"""
+    Transform a string and color specifications into an IO Chardata with a 
+    reset at the end
+  """
+  def color_reset(subject, colorspec)
+
+  def color_reset(subject, colorspec) when is_atom(colorspec) do
+    color_reset(subject, [colorspec])
+  end
+
+  def color_reset(subject, colorspec) do
+    color(subject, [:reset | colorspec])
+  end
+
+  defp _extract_code(code)
+
+  defp _extract_code({_, _, _} = rgb) do
+    if System.get_env("NO_COLOR") do
+      ""
+    else
       _extract_rgb(rgb)
     end
+  end
 
-    defp _extract_code(code) do
+  defp _extract_code(code) do
+    if System.get_env("NO_COLOR") do
+      ""
+    else
       case Map.get(@names, code) do
         {_, _, _} = rgb -> _extract_rgb(rgb)
         {:color, col} -> _extract_col(col)
-        ansi ->  "\e[#{ansi}m"
+        ansi -> "\e[#{ansi}m"
       end
     end
+  end
 
-    defp _extract_col(col) do
-      "\e[38;5;#{col}m"
+  defp _extract_col(col) do
+    "\e[38;5;#{col}m"
+  end
+
+  defp _extract_rgb({r, g, b}) do
+    "\e[38;2;#{r};#{g};#{b}m"
+  end
+
+  defp _extract_reset(colorspec) do
+    if Enum.member?(colorspec, :reset) do
+      {List.delete(colorspec, :reset), _extract_code(:reset)}
+    else
+      {colorspec, ""}
     end
-
-    defp _extract_rgb({r, g, b}) do
-      "\e[38;2;#{r};#{g};#{b}m"
-    end
-
-    defp _extract_reset(colorspec) do
-      if Enum.member?(colorspec, :reset) do
-        {List.delete(colorspec, :reset), _extract_code(:reset)}
-      else
-        {colorspec, ""}
-      end
-    end
-
+  end
 end
 
 # SPDX-License-Identifier: AGPL-3.0-or-later

@@ -1,8 +1,9 @@
 defmodule ExAequoColors.Cli do
 
+  alias ExAequoColors.Colorizer.Parser, as: Parser
   import ExAequoBase.Map, only: [put_if: 3]
   import ExAequoColors.Color, only: [color: 2]
-  import ExAequoColors.Colorizer, only: [colorize: 1, colorize: 2, colorize!: 2, mk_options_and_rgxen: 1]
+  import ExAequoColors.Colorizer, only: [colorize: 1, colorize: 2, colorize!: 3, mk_options_and_rgxen: 1]
 
   @moduledoc false
 
@@ -43,18 +44,18 @@ defmodule ExAequoColors.Cli do
   end
 
   defp colorize_input(options) do
-    opt_and_rgxen = mk_options_and_rgxen(options)
     case Map.get(options, :file) do
       nil -> IO.stream(:stdio, :line)
       file -> File.stream!(file, :line)
     end 
-    |> run(opt_and_rgxen) 
+    |> run(options) 
   end
 
 
-  defp run(stream, opt_and_rgxen) do
+  defp run(stream, options) do
+    parser = Parser.chunks_parser(options)
     stream
-    |> Stream.map(&colorize!(&1, opt_and_rgxen))
+    |> Stream.map(&colorize!(&1, parser, options))
     |> Enum.join("\n") 
   end
 
