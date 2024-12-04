@@ -31,6 +31,7 @@ defmodule Test.Color.BasicAnsiTest do
       assert col("red", :red) == "\e[31mred"
     end
   end
+
   # defmodule Test.ExAequo.ColorTest do
   # use ExUnit.Case
 

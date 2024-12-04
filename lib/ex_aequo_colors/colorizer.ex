@@ -3,9 +3,8 @@ defmodule ExAequoColors.Colorizer do
 
   alias ExAequoColors.Color
   alias ExAequoColors.Colorizer.Parser, as: Parser
-  import ExAequoBase.Enum, only: [map_ok: 2]
-  import ExAequoBase.Fn, only: [select: 1]
-  import ExAequoBase.Text, only: [behead: 2, parse_up_to: 3]
+
+  import ExAequoBase.Map, only: [put_if: 3]
 
   @moduledoc ~S"""
   Backend of the cli
@@ -17,6 +16,7 @@ defmodule ExAequoColors.Colorizer do
   @default_options %{
     trigger: "<",
     closer: ">",
+    reset: "",
     resetter: "$"
   }
 
@@ -68,6 +68,19 @@ defmodule ExAequoColors.Colorizer do
       iex(8)> colorize("!red!!!<$", trigger: "!", closer: "!")
       "\e[31m!<\e[0m"
 
+   # rgb
+
+    In three decimal numbers....
+
+      iex(9)> colorize("<12,255,0>rgb")
+      "\e[38;2;12;255;0mrgb"
+
+
+    or in hex
+
+      iex(9)> colorize("<#0cff00>rgb")
+      "\e[38;2;12;255;0mrgb"
+
   """
 
   @spec colorize(binary()) :: color_t()
@@ -81,14 +94,33 @@ defmodule ExAequoColors.Colorizer do
   end
 
   def colorize(lines, options) do
+    options1 = make_options(options)
+    reset = if Map.get(options1, :auto), do: Color.color_code(:reset), else: ""
+
     lines
-    |> Enum.map(&Minipeg.Parser.parse_string(Parser.chunks_parser(options), &1))
-    |> Enum.join(options.reset <> "\n")
+    |> Enum.map(&Minipeg.Parser.parse_string!(Parser.chunks_parser(options1), &1))
+    # |> IO.inspect
+    |> Enum.join(reset <> "\n")
   end
 
   def colorize!(line, parser, options) do
-    Minipeg.Parser.parse_string(parser) <> options.reset
+    reset = if Map.get(options, :auto), do: Color.color_code(:reset), else: ""
+    with {:ok, parsed} <- Minipeg.Parser.parse_string(parser, line) do
+      {:ok, parsed <> reset}
+    end
   end
+
+  def make_parser(options) do
+    options 
+    |> make_options()
+    |> Parser.chunks_parser
+  end
+
+  def make_options(options) do
+    options
+    |> Enum.into(@default_options) 
+  end
+
 end
 
 # SPDX-License-Identifier: AGPL-3.0-or-later

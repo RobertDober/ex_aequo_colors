@@ -1,9 +1,9 @@
 defmodule ExAequoColors.Cli do
 
-  alias ExAequoColors.Colorizer.Parser, as: Parser
-  import ExAequoBase.Map, only: [put_if: 3]
+  # import ExAequoBase.Map, only: [put_if: 3]
   import ExAequoColors.Color, only: [color: 2]
-  import ExAequoColors.Colorizer, only: [colorize: 1, colorize: 2, colorize!: 3, mk_options_and_rgxen: 1]
+  # import ExAequoColors.Colorizer, only: [colorize: 2, colorize!: 3]
+  import ExAequoColors.Colorizer, only: [colorize!: 3, make_parser: 1]
 
   @moduledoc false
 
@@ -28,55 +28,62 @@ defmodule ExAequoColors.Cli do
     # --html       Short for --trigger <!-- and --closer -->    
 
 
-  def main(args) do
-    case parse_args(args) do
-      [x] ->  
-        IO.puts(:stderr, color("ERROR:", [:bold, :red, :reset]) <> inspect(x))
-        IO.puts(:stderr, @args)
-      :help -> IO.puts(@args)
-      :version -> IO.puts("colorize v#{_version()}")
-      options -> options
+    def main(args) do
+      case parse_args(args) do
+        [x] ->  
+          IO.puts(:stderr, color("ERROR:", [:bold, :red, :reset]) <> inspect(x))
+          IO.puts(:stderr, @args)
+        :help -> IO.puts(@args)
+        :version -> IO.puts("colorize v#{_version()}")
+        options -> options
       # |> _add_defaults()
       # |> _add_shortcuts()
       |> colorize_input() 
       |> IO.puts 
+      end
     end
-  end
 
-  defp colorize_input(options) do
-    case Map.get(options, :file) do
-      nil -> IO.stream(:stdio, :line)
-      file -> File.stream!(file, :line)
-    end 
-    |> run(options) 
-  end
-
-
-  defp run(stream, options) do
-    parser = Parser.chunks_parser(options)
-    stream
-    |> Stream.map(&colorize!(&1, parser, options))
-    |> Enum.join("\n") 
-  end
-
-  defp _add_defaults(options) do
-    options
-    |> Map.put_new(:trigger, "<") 
-    |> Map.put_new(:closer, ">") 
-  end
-
-  defp _add_shortcuts(options) do
-    options
-    |> put_if(options.html, [trigger: "<!--", closer: "-->"]) 
-    |> put_if(options.dollar, [resetter: "$"])
-  end
-
-  defp _colorize_line({line, lnb}, options) do
-    case colorize(line, options) do
-      {:ok, result} -> result
-      {:error, message} -> raise "Error in line #{lnb}: #{message}"
+    defp colorize_input(options) do
+      case Map.get(options, :file) do
+        nil -> IO.stream(:stdio, :line)
+        file -> File.stream!(file, :line)
+      end 
+      |> run(options) 
     end
-  end
+
+
+    defp run(stream, options) do
+      parser = make_parser(options)
+      stream
+      |> Stream.with_index
+      |> Stream.map(&colorize_line(&1, parser, options))
+      |> Enum.join("\n") 
+    end
+
+    defp colorize_line({line, index}, parser, options) do
+      case colorize!(line, parser, options) do
+        {:ok, ast} -> ast
+        {:error, reason} -> raise "#{reason} in line #{index + 1}"
+      end
+    end
+  # defp _add_defaults(options) do
+  #   options
+  #   |> Map.put_new(:trigger, "<") 
+  #   |> Map.put_new(:closer, ">") 
+  # end
+
+  # defp _add_shortcuts(options) do
+  #   options
+  #   |> put_if(options.html, [trigger: "<!--", closer: "-->"]) 
+  #   |> put_if(options.dollar, [resetter: "$"])
+  # end
+
+  # defp _colorize_line({line, lnb}, options) do
+  #   case colorize(line, options) do
+  #     {:ok, result} -> result
+  #     {:error, message} -> raise "Error in line #{lnb}: #{message}"
+  #   end
+  # end
 
   defp parse_args(argv) do
     switches = [

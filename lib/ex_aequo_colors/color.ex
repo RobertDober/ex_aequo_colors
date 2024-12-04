@@ -516,7 +516,7 @@ defmodule ExAequoColors.Color do
     |> Enum.join()
   end
 
-  def color_code(colorspec), do: _extract_code(:reset)
+  def color_code(colorspec), do: _extract_code(colorspec)
 
   @doc ~S"""
     Transform a string and color specifications into an IO Chardata with a 

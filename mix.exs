@@ -35,12 +35,12 @@ defmodule ExAequoColors.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:dialyxir, "~> 1.4.3", only: [:dev], runtime: false},
+      {:dialyxir, "~> 1.4.5", only: [:dev], runtime: false},
       # {:ex_aequo_fn, "~> 0.1.0"},
       {:ex_aequo_base, "~> 0.1.5"},
-      {:excoveralls, "~> 0.18.2", only: [:test]},
+      {:excoveralls, "~> 0.18.3", only: [:test]},
       {:extractly, "~> 0.5.4", only: [:dev]},
-      {:minipeg, "~> 0.6.5"}
+      {:minipeg, "~> 0.7.0"}
     ]
   end
 

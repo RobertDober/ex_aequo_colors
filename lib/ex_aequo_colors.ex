@@ -1,7 +1,7 @@
 defmodule ExAequoColors do
   @version "0.1.0"
 
-  alias __MODULE__.Color
+  alias __MODULE__.{Color, Colorizer}
 
   @moduledoc  ~S"""
 
@@ -57,6 +57,11 @@ defmodule ExAequoColors do
     Color.color_reset(to_string(subject), [flag1, flag2])
   end
 
+  @doc """
+  Convenience delegation
+  """
+  defdelegate colorize(line, options), to: Colorizer
+  defdelegate colorize(line), to: Colorizer
 
   def version, do: @version
 end
