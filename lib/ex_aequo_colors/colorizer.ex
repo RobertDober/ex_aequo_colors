@@ -4,8 +4,6 @@ defmodule ExAequoColors.Colorizer do
   alias ExAequoColors.Color
   alias ExAequoColors.Colorizer.Parser, as: Parser
 
-  import ExAequoBase.Map, only: [put_if: 3]
-
   @moduledoc ~S"""
   Backend of the cli
   """
@@ -78,7 +76,7 @@ defmodule ExAequoColors.Colorizer do
 
     or in hex
 
-      iex(9)> colorize("<#0cff00>rgb")
+      iex(10)> colorize("<#0cff00>rgb")
       "\e[38;2;12;255;0mrgb"
 
   """
@@ -103,24 +101,104 @@ defmodule ExAequoColors.Colorizer do
     |> Enum.join(reset <> "\n")
   end
 
+  @doc ~S"""
+
+  Using a map for options and an already provided parser
+
+      iex(11)> parser = make_parser()
+      ...(11)> colorize!("<magenta,bold>", parser, %{auto: true})
+      {:ok, "\e[35m\e[1m\e[0m"}
+
+  This is very useful for meaningful error messages as we can see
+  below
+  """
+
   def colorize!(line, parser, options) do
     reset = if Map.get(options, :auto), do: Color.color_code(:reset), else: ""
+
     with {:ok, parsed} <- Minipeg.Parser.parse_string(parser, line) do
       {:ok, parsed <> reset}
     end
   end
 
-  def make_parser(options) do
-    options 
+  @doc ~S"""
+  This differs substentially from calling `colorize` with a list as we will report errors with line numbers if applicable
+        
+      iex(12)> colorize_lines(["<bold>BOLD", "<red>RED"])
+      {:ok, ["\e[1mBOLD", "\e[31mRED"]}
+
+  It can also join the lines together
+        
+      iex(13)> colorize_lines(["<bold>BOLD", "<red>RED"], join: true)
+      {:ok, "\e[1mBOLD\n\e[31mRED"}
+
+  with a custom joiner and autoreset too
+        
+      iex(14)> colorize_lines(["<bold>BOLD", "<red>RED"], join: "", auto: true)
+      {:ok, "\e[1mBOLD\e[0m\e[31mRED\e[0m"}
+
+
+  Lines can also be a stream
+        
+      iex(15)> lines = ["<bold>BOLD", "<red>RED"] |> Stream.map(&(&1))
+      ...(15)> colorize_lines(lines)
+      {:ok, ["\e[1mBOLD", "\e[31mRED"]}
+
+      colorize_lines()
+      {:ok, ["\e[1mBOLD", "\e[31mRED"]}
+
+  but the nice thing is to tell the user where the error is
+    
+      iex(14)> colorize_lines(["<bold>BOLD", "<red"], join: "", auto: true)
+      {:error, "Illegal color syntax in line 2"}
+
+  """
+  def colorize_lines(lines, options \\ []) do
+    {parser, options1} = make_parser_and_options(options)
+
+    case _colorize_lines(lines, parser, options1) do
+      {:ok, colorized} -> _render_lines(colorized, options1)
+      error -> error
+    end
+  end
+
+  defp _colorize_lines(lines, parser, options) do
+    lines
+    |> Stream.with_index()
+    |> Enum.reduce_while({:ok, []}, fn {line, index}, {:ok, converted} ->
+      case colorize!(line, parser, options) do
+        {:ok, next_converted} -> {:cont, {:ok, [next_converted | converted]}}
+        _ -> {:halt, {:error, "Illegal color syntax in line #{index + 1}"}}
+      end
+    end)
+  end
+
+  defp _render_lines(colorized, options) do
+    lines = Enum.reverse(colorized)
+    case Map.get(options, :join) do
+      nil -> {:ok, lines}
+      true -> {:ok, Enum.join(lines, "\n")}
+      joiner -> {:ok, Enum.join(lines, joiner)}
+    end
+  end
+
+
+  def make_parser(options \\ []) do
+    options
     |> make_options()
-    |> Parser.chunks_parser
+    |> Parser.chunks_parser()
+  end
+
+  def make_parser_and_options(options \\ []) do
+    options1 = options
+    |> make_options()
+    {Parser.chunks_parser(options1), options1}
   end
 
   def make_options(options) do
     options
-    |> Enum.into(@default_options) 
+    |> Enum.into(@default_options)
   end
-
 end
 
 # SPDX-License-Identifier: AGPL-3.0-or-later

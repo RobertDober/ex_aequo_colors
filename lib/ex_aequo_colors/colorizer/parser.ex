@@ -9,7 +9,10 @@ defmodule ExAequoColors.Colorizer.Parser do
   """
 
   def chunks_parser(options) do
-    many_as_string(chunk_parser(options))
+    sequence([
+      many_as_string(chunk_parser(options)),
+      end_parser()
+    ])  |> map(&List.first/1)
   end
 
   defp chunk_parser(options) do
