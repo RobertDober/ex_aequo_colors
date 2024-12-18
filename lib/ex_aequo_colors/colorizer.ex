@@ -95,10 +95,10 @@ defmodule ExAequoColors.Colorizer do
     options1 = make_options(options)
     reset = if Map.get(options1, :auto), do: Color.color_code(:reset), else: ""
 
-    lines
+    (lines
     |> Enum.map(&Minipeg.Parser.parse_string!(Parser.chunks_parser(options1), &1))
     # |> IO.inspect
-    |> Enum.join(reset <> "\n")
+    |> Enum.join(reset <> "\n")) <> reset
   end
 
   @doc ~S"""

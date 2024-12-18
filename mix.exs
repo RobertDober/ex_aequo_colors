@@ -1,6 +1,6 @@
 defmodule ExAequoColors.MixProject do
   use Mix.Project
-  @version "0.1.1"
+  @version "0.1.2"
   @url "https://github.com/RobertDober/ex_aequo_colors"
 
   def project do

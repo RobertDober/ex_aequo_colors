@@ -63,6 +63,15 @@ defmodule ExAequoColors do
   defdelegate colorize(line, options), to: Colorizer
   defdelegate colorize(line), to: Colorizer
 
+  @doc ~S"""
+  Colorizes and puts to device
+  """
+  def puts_col(line, device \\ :stdio) do
+    colorized = line |> colorize(auto: true)
+    IO.puts(device, colorized)
+  end
+
+
   def version, do: @version
 end
 
