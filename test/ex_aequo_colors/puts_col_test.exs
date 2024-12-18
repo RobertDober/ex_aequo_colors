@@ -4,7 +4,7 @@ defmodule Test.ExAequoColors.PutsColTest do
 
   import ExAequoColors, only: [puts_col: 1, puts_col: 2]
 
-  describe "puts_col" do
+  describe "puts_col, a string" do
     test "it puts colorized to stdout" do
       output = capture_io(fn ->
         puts_col("<bold>hello")
@@ -19,5 +19,18 @@ defmodule Test.ExAequoColors.PutsColTest do
     end
   end
 
+  describe "puts_col, a list" do
+    test "it puts to stdout" do
+      lines = [
+        "<bold>important",
+        "<dim>not so much",
+      ]
+      output = capture_io(fn ->
+        puts_col(lines)
+      end)
+      assert output == "\e[1mimportant\e[0m\n\e[2mnot so much\e[0m\n"
+      
+    end
+  end
 end
 # SPDX-License-Identifier: Apache-2.0
