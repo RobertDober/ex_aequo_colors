@@ -18,6 +18,12 @@ defmodule Test.ExAequoColors.ColorizerTest do
       assert colorize("<#fd8>rgb hex 3", auto: true) == "\e[38;2;240;208;128mrgb hex 3\e[0m"
     end
   end
+
+  describe "multiple" do
+    test "boldly" do
+      assert colorize("<blue,bold>Boldly") == "\e[34m\e[1mBoldly"
+    end
+  end
   
 end
 # SPDX-License-Identifier: AGPL-3.0-or-later

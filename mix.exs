@@ -1,25 +1,19 @@
 defmodule ExAequoColors.MixProject do
   use Mix.Project
-  @version "0.1.3"
+  @version "0.1.4"
   @url "https://github.com/RobertDober/ex_aequo_colors"
 
   def project do
     [
       app: :ex_aequo_colors,
       version: @version,
-      elixir: "~> 1.17",
+      elixir: "~> 1.19-rc",
       elixirc_paths: elixirc_paths(Mix.env()),
       escript: escript_config(),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       description: "ANSI colors at will",
       package: package(),
-      preferred_cli_env: [
-        coveralls: :test,
-        "coveralls.detail": :test,
-        "coveralls.post": :test,
-        "coveralls.html": :test
-      ],
       test_coverage: [tool: ExCoveralls],
       aliases: [docs: &build_docs/1]
     ]
@@ -32,13 +26,15 @@ defmodule ExAequoColors.MixProject do
     ]
   end
 
+  def cli do
+      [preferred_envs: [coveralls: :test, "coveralls.detail": :test, "coveralls.post": :test, "coveralls.html": :test]]
+    end
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:dialyxir, "~> 1.4.5", only: [:dev], runtime: false},
-      # {:ex_aequo_fn, "~> 0.1.0"},
+      {:dialyxir, "~> 1.4.5", only: [:dev, :test], runtime: false},
+      {:excoveralls, "~> 0.18.5", only: [:test]},
       {:ex_aequo_base, "~> 0.1.5"},
-      {:excoveralls, "~> 0.18.3", only: [:test]},
       {:extractly, "~> 0.5.4", only: [:dev]},
       {:minipeg, "~> 0.7.0"}
     ]

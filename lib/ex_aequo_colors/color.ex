@@ -473,7 +473,19 @@ defmodule ExAequoColors.Color do
   }
 
   @doc ~S"""
-  just get the code for colorspec without a string (subject)
+  color code, potentially with a string
+        
+      iex(1)> color("hello", :blue)
+      "\e[34mhello"
+
+  or just the code
+
+      iex(2)> color(:green)
+      "\e[32m"
+
+      iex(3)> color([:yellow, :bold])
+      "\e[33m\e[1m"
+
   """
   def color(colorspec)
 
@@ -508,6 +520,16 @@ defmodule ExAequoColors.Color do
     |> IO.chardata_to_string()
   end
 
+  @doc ~S"""
+  just get the code for colorspec without a string (subject)
+
+      iex(4)> color_code(:green)
+      "\e[32m"
+
+      iex(5)> color_code([:yellow, :bold])
+      "\e[33m\e[1m"
+
+  """
   def color_code(colorspec)
 
   def color_code(colorspec) when is_list(colorspec) do
@@ -519,8 +541,11 @@ defmodule ExAequoColors.Color do
   def color_code(colorspec), do: _extract_code(colorspec)
 
   @doc ~S"""
-    Transform a string and color specifications into an IO Chardata with a 
-    reset at the end
+  reset at the end of yje string
+
+      iex(6)> color_reset("green", :green)
+      "\e[32mgreen\e[0m"
+
   """
   def color_reset(subject, colorspec)
 
