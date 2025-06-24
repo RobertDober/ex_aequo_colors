@@ -7,7 +7,7 @@ defmodule ExAequoColors.MixProject do
     [
       app: :ex_aequo_colors,
       version: @version,
-      elixir: "~> 1.19-rc",
+      elixir: "~> 1.19",
       elixirc_paths: elixirc_paths(Mix.env()),
       escript: escript_config(),
       start_permanent: Mix.env() == :prod,

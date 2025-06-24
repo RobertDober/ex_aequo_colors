@@ -60,6 +60,7 @@ defmodule ExAequoColors.Cli.Implementation do
       nil -> IO.stream(:stdio, :line)
       file -> File.stream!(file, :line)
     end
+    |> Stream.map(&String.trim_trailing(&1, "\n"))
     |> colorize_lines(Map.put(options, :join, true))
   end
 
