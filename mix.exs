@@ -1,6 +1,6 @@
 defmodule ExAequoColors.MixProject do
   use Mix.Project
-  @version "0.1.4"
+  @version "0.1.3"
   @url "https://github.com/RobertDober/ex_aequo_colors"
 
   def project do
@@ -28,15 +28,16 @@ defmodule ExAequoColors.MixProject do
 
   def cli do
       [preferred_envs: [coveralls: :test, "coveralls.detail": :test, "coveralls.post": :test, "coveralls.html": :test]]
-    end
+  end
+
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
       {:dialyxir, "~> 1.4.5", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.18.5", only: [:test]},
-      {:ex_aequo_base, "~> 0.1.5"},
-      {:extractly, "~> 0.5.4", only: [:dev]},
-      {:minipeg, "~> 0.7.0"}
+      {:ex_aequo_base, "~> 0.1.6"},
+      {:extractly, "~> 0.6.1", only: [:dev]},
+      {:minipeg, "~> 0.7.6"}
     ]
   end
 
